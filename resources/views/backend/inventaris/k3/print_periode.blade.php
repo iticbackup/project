@@ -502,7 +502,7 @@
 
                             <td colspan="2" class="text-bold">Lokasi.</td>
 
-                            <td colspan="3">: {{ $formHydrants->lokasi }}</td>
+                            <td colspan="6">: {{ $formHydrants->lokasi }}</td>
 
                         </tr>
 
