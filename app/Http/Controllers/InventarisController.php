@@ -1275,6 +1275,6 @@ class InventarisController extends Controller
         $pdf = new PDF();
         $pdf = PDF::loadView('backend.inventaris.k3.print_periode', $data);
         $pdf->setPaper('a4', 'landscape');
-        return $pdf->stream();
+        return $pdf->stream('Form Checklist APAR HYDRANT Periode '.$data['periode_from'].' To '.$data['periode_to']);
     }
 }
