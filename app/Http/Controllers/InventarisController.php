@@ -48,45 +48,48 @@ class InventarisController extends Controller
                                     $inventarisK3Details = InventarisK3Detail::where('inventaris_k3_id',$row->id)->get();
                                     foreach ($inventarisK3Details as $key => $inventarisK3Detail) {
                                         if($inventarisK3Detail->jenis_barang == 'APAR'){
-                                            $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                                $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-                                                $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
-                                                                        ->where('bulan',$tgl_sekarang)
-                                                                        // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
-                                                                        // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
-                                                                        // ->whereMonth('tanggal','<=',Carbon::now()->format('m'))
-                                                                        // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                                $tahun_aktif = Carbon::now()->subYear()->format('Y');
+                                                $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                                        ->where('periode',$tahun_aktif)
                                                                         ->first();
                                             }else{
-                                                $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
-                                                $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
-                                                                        ->where('bulan',$tgl_sekarang)
-                                                                        // ->whereMonth('tanggal',Carbon::now()->format('m'))
-                                                                        // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                                $tahun_aktif = Carbon::now()->format('Y');
+                                                $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                                        ->where('periode',$tahun_aktif)
                                                                         ->first();
                                             }
 
-                                            // dd($formApartDetail->bulan);
-
-                                            // if($formApartDetail->bulan <= Carbon::now()){
-                                            //     $statusApart = $formApartDetail;
-                                            // }
-                                                                    // dd($formApartDetail);
-                                            // if(empty($formApartDetail)){
-                                            //     $statusApart = '-';
-                                            // }else{
-                                            //     $statusApart = $formApartDetail->status;
-                                            // }
-
+                                            if (env('OPEN_INVENTARIS_K3') == 'yes') {
+                                                $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                                $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
+                                                            ->where('bulan',$tgl_sekarang)
+                                                            // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
+                                                            // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
+                                                            // ->whereMonth('tanggal','<=',Carbon::now()->format('m'))
+                                                            // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                                            ->first();
+                                            }else{
+                                                $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
+                                                $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
+                                                                ->where('bulan',$tgl_sekarang)
+                                                                // ->whereMonth('tanggal',Carbon::now()->format('m'))
+                                                                // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                                                ->first();
+                                            }
                                             $statusApart = $formApartDetail;
-
-                                            // if($statusApart == '0'){
-                                            //     $statusApartNotif = '<span class="badge badge-outline-warning">Menunggu Persetujuan</span>';
-                                            // }
-                                            // dd($formApartDetail);
                                         }elseif($inventarisK3Detail->jenis_barang == 'HYDRANT'){
-                                            $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                                            if (env('OPEN_INVENTARIS_K3') == 'yes') {
+                                                $tahun_aktif = Carbon::now()->subYear()->format('Y');
+                                                $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                                        ->where('periode',$tahun_aktif)
+                                                                        ->first();
+                                            }else{
+                                                $tahun_aktif = Carbon::now()->format('Y');
+                                                $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                                        ->where('periode',$tahun_aktif)
+                                                                        ->first();
+                                            }
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
                                                 // dd($tgl_sekarang);
@@ -102,34 +105,16 @@ class InventarisController extends Controller
                                                 $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
                                                 $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
                                                                         ->where('bulan',$tgl_sekarang)
-                                                                        // ->whereMonth('tanggal',Carbon::now()->format('m'))
-                                                                        // ->whereYear('tanggal',Carbon::now()->format('Y'))
                                                                         ->first();
                                             }
-                                                                    // dd('HYDRANT = '.$formHydrantDetail->status);
-                                            // if(empty($formHydrantDetail)){
-                                            //     $statusHydrant = '-';
-                                            // }else{
-                                            //     $statusHydrant = $formHydrantDetail->status;
-                                            // }
                                             $statusHydrant = $formHydrantDetail;
-                                                                    // dd($statusHydrant);
                                         }
                                     }
-                                    
+
                                     if(empty($statusApart)){
                                         $statusApartNotif = null;
-                                        // $statusApartNotif = ' - <span class="badge badge-outline-primary">Data APAR Belum Diinput</span>';
                                     }
                                     else{
-                                        // $explode_bulan = explode('|', $statusApart->bulan);
-                                        // $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
-                                        // $backDate = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-                                        // dd($backDate);
-                                        // $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
-
-                                        // dd($statusApart->bulan.' '.$backDate);
-
                                         $explode_bulan = explode('|', $statusApart->bulan);
                                         $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
                                         if($statusApart->status == '0'){
@@ -144,63 +129,13 @@ class InventarisController extends Controller
                                         elseif($statusApart->status == null){
                                             $statusApartNotif = ' - <span class="badge badge-outline-primary">APAR Belum Diinput ' .$bulan.'</span>';
                                         }
-
-                                        // if ($tgl_old == $backDate) {
-                                        //     if($statusApart->status == '0'){
-                                        //         $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.$bulan.'</span>';
-                                        //     }
-                                        //     if($statusApart->status == 'Y'){
-                                        //         $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
-                                        //     }
-                                        //     if($statusApart->status == 'T'){
-                                        //         $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
-                                        //     }
-                                        //     if($statusApart->status == null){
-                                        //         $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .$bulan.'</span>';
-                                        //     }
-                                        // }
-                                        // if($statusApart->status == '0'){
-                                        //     $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.$bulan.'</span>';
-                                        // }
-                                        // if($statusApart->status == 'Y'){
-                                        //     $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
-                                        // }
-                                        // if($statusApart->status == 'T'){
-                                        //     $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
-                                        // }
-                                        // if($statusApart->status == null){
-                                        //     $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .$bulan.'</span>';
-                                        // }
-                                        // else{
-                                        //     $statusApartNotif = 'no';
-                                        // }
-
-                                        // if($statusApart->status == '0'){
-                                        //     $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
-                                        // }
-                                        // elseif($statusApart->status == 'Y'){
-                                        //     $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.Carbon::parse($statusApart->updated_at)->isoFormat('MM MMMM YYYY').'</span>';
-                                        // }
-                                        // elseif($statusApart->status == 'T'){
-                                        //     $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
-                                        // }
-                                        // else{
-                                        //     $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
-                                        // }
                                         
                                     }
 
                                     if(empty($statusHydrant)){
                                         $statusHydrantNotif = null;
-                                        // $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput</span>';
                                     }
                                     else{
-                                        // $explode_bulan = explode('|',$statusHydrant->bulan);
-                                        // $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
-                                        // $backDate = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-
-                                        // $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
-
                                         $explode_bulan = explode('|', $statusHydrant->bulan);
                                         $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
 
@@ -216,45 +151,192 @@ class InventarisController extends Controller
                                         elseif($statusHydrant->status == null){
                                             $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
                                         }
-                                        
-                                        // if($tgl_old <= $backDate){
-                                        //     if($statusHydrant->status == '0'){
-                                        //         $statusHydrantNotif = ' - <span class="badge bg-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
-                                        //     }
-                                        //     elseif($statusHydrant->status == 'Y'){
-                                        //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
-                                        //     }
-                                        //     elseif($statusHydrant->status == 'T'){
-                                        //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
-                                        //     }
-                                        //     else{
-                                        //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
-                                        //     }
-                                        // }else{
-                                        //     if($statusHydrant->status == '0'){
-                                        //         $statusHydrantNotif = ' - <span class="badge bg-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
-                                        //     }
-                                        //     elseif($statusHydrant->status == 'Y'){
-                                        //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
-                                        //     }
-                                        //     elseif($statusHydrant->status == 'T'){
-                                        //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
-                                        //     }
-                                        //     else{
-                                        //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
-                                        //     }
-                                        // }
                                     }
 
+                                    return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
+                                    // foreach ($inventarisK3Details as $key => $inventarisK3Detail) {
+                                    //     if($inventarisK3Detail->jenis_barang == 'APAR'){
+                                    //         $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                                    //         if (env('OPEN_INVENTARIS_K3') == 'yes') {
+                                    //             $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                    //             $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
+                                    //                                     ->where('bulan',$tgl_sekarang)
+                                    //                                     // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
+                                    //                                     // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
+                                    //                                     // ->whereMonth('tanggal','<=',Carbon::now()->format('m'))
+                                    //                                     // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                    //                                     ->first();
+                                    //         }else{
+                                    //             $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
+                                    //             $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
+                                    //                                     ->where('bulan',$tgl_sekarang)
+                                    //                                     // ->whereMonth('tanggal',Carbon::now()->format('m'))
+                                    //                                     // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                    //                                     ->first();
+                                    //         }
+                                    //         $statusApart = $formApartDetail;
+                                    //     }elseif($inventarisK3Detail->jenis_barang == 'HYDRANT'){
+                                    //         $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                                    //         if (env('OPEN_INVENTARIS_K3') == 'yes') {
+                                    //             $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                    //             // dd($tgl_sekarang);
+                                    //             $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
+                                    //                                 ->where('bulan',$tgl_sekarang)
+                                    //                                 // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
+                                    //                                 // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
+                                    //                                 // ->whereMonth('tanggal','<=',Carbon::now()->subMonth()->format('m'))
+                                    //                                 // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                    //                                 ->first();
+                                    //             // dd($formHydrantDetail);
+                                    //         }else{
+                                    //             $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
+                                    //             $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
+                                    //                                     ->where('bulan',$tgl_sekarang)
+                                    //                                     // ->whereMonth('tanggal',Carbon::now()->format('m'))
+                                    //                                     // ->whereYear('tanggal',Carbon::now()->format('Y'))
+                                    //                                     ->first();
+                                    //         }
+                                    //                                 // dd('HYDRANT = '.$formHydrantDetail->status);
+                                    //         // if(empty($formHydrantDetail)){
+                                    //         //     $statusHydrant = '-';
+                                    //         // }else{
+                                    //         //     $statusHydrant = $formHydrantDetail->status;
+                                    //         // }
+                                    //         $statusHydrant = $formHydrantDetail;
+                                    //                                 // dd($statusHydrant);
+                                    //     }
+                                    // }
+                                    
                                     // if(empty($statusApart)){
                                     //     $statusApartNotif = null;
                                     //     // $statusApartNotif = ' - <span class="badge badge-outline-primary">Data APAR Belum Diinput</span>';
                                     // }
-                                    // return $row->kode_barcode.' - '.$statusApart.' - '.$statusHydrant;
-                                    // return $row->kode_barcode.$statusApartNotif;
+                                    // else{
+                                    //     $explode_bulan = explode('|', $statusApart->bulan);
+                                    //     $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
+                                    //     if($statusApart->status == '0'){
+                                    //         $statusApartNotif = ' - <span class="badge badge-outline-warning">Waiting for approval APAR '.$bulan.'</span>';
+                                    //     }
+                                    //     elseif($statusApart->status == 'Y'){
+                                    //         $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
+                                    //     }
+                                    //     elseif($statusApart->status == 'T'){
+                                    //         $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
+                                    //     }
+                                    //     elseif($statusApart->status == null){
+                                    //         $statusApartNotif = ' - <span class="badge badge-outline-primary">APAR Belum Diinput ' .$bulan.'</span>';
+                                    //     }
+
+                                    //     // if ($tgl_old == $backDate) {
+                                    //     //     if($statusApart->status == '0'){
+                                    //     //         $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     if($statusApart->status == 'Y'){
+                                    //     //         $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     if($statusApart->status == 'T'){
+                                    //     //         $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     if($statusApart->status == null){
+                                    //     //         $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .$bulan.'</span>';
+                                    //     //     }
+                                    //     // }
+                                    //     // if($statusApart->status == '0'){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.$bulan.'</span>';
+                                    //     // }
+                                    //     // if($statusApart->status == 'Y'){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
+                                    //     // }
+                                    //     // if($statusApart->status == 'T'){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
+                                    //     // }
+                                    //     // if($statusApart->status == null){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .$bulan.'</span>';
+                                    //     // }
+                                    //     // else{
+                                    //     //     $statusApartNotif = 'no';
+                                    //     // }
+
+                                    //     // if($statusApart->status == '0'){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
+                                    //     // }
+                                    //     // elseif($statusApart->status == 'Y'){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.Carbon::parse($statusApart->updated_at)->isoFormat('MM MMMM YYYY').'</span>';
+                                    //     // }
+                                    //     // elseif($statusApart->status == 'T'){
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
+                                    //     // }
+                                    //     // else{
+                                    //     //     $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
+                                    //     // }
+                                        
+                                    // }
+
+                                    // if(empty($statusHydrant)){
+                                    //     $statusHydrantNotif = null;
+                                    //     // $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput</span>';
+                                    // }
+                                    // else{
+                                    //     // $explode_bulan = explode('|',$statusHydrant->bulan);
+                                    //     // $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
+                                    //     // $backDate = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+
+                                    //     // $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
+
+                                    //     $explode_bulan = explode('|', $statusHydrant->bulan);
+                                    //     $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
+
+                                    //     if($statusHydrant->status == '0'){
+                                    //         $statusHydrantNotif = ' - <span class="badge badge-outline-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
+                                    //     }
+                                    //     elseif($statusHydrant->status == 'Y'){
+                                    //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
+                                    //     }
+                                    //     elseif($statusHydrant->status == 'T'){
+                                    //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
+                                    //     }
+                                    //     elseif($statusHydrant->status == null){
+                                    //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
+                                    //     }
+                                        
+                                    //     // if($tgl_old <= $backDate){
+                                    //     //     if($statusHydrant->status == '0'){
+                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     elseif($statusHydrant->status == 'Y'){
+                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     elseif($statusHydrant->status == 'T'){
+                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     else{
+                                    //     //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
+                                    //     //     }
+                                    //     // }else{
+                                    //     //     if($statusHydrant->status == '0'){
+                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     elseif($statusHydrant->status == 'Y'){
+                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     elseif($statusHydrant->status == 'T'){
+                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
+                                    //     //     }
+                                    //     //     else{
+                                    //     //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
+                                    //     //     }
+                                    //     // }
+                                    // }
+
+                                    // // if(empty($statusApart)){
+                                    // //     $statusApartNotif = null;
+                                    // //     // $statusApartNotif = ' - <span class="badge badge-outline-primary">Data APAR Belum Diinput</span>';
+                                    // // }
+                                    // // return $row->kode_barcode.' - '.$statusApart.' - '.$statusHydrant;
+                                    // // return $row->kode_barcode.$statusApartNotif;
+                                    // // return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
+                                    // // return $row->kode_barcode;
                                     // return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
-                                    // return $row->kode_barcode;
-                                    return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
                                 })
                                 ->addColumn('departemen_id', function($row){
                                     return $row->departemen->nama_departemen;
