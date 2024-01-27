@@ -40,6 +40,13 @@
                     aria-label="Close"></button>
             </div>
         @endif
+        @if (env('NOTIF_INFORMASI') == true)
+        <div class="col-md-12">
+            <div class="alert alert-outline-primary" role="alert">
+                <strong>Informasi!</strong> Alamat website aplikasi pengecekkan <b>APAR & HYDRANT</b> berubah ke alamat website <a href="https://app.indonesianshagtobacco.com" class="text-blue"><b>https://app.indonesianshagtobacco.com</b></a>
+            </div>
+        </div>
+        @endif
         <div class="col-lg-9">
             <div class="row">
                 <div class="col-lg-3">
