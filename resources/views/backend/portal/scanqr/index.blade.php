@@ -25,9 +25,9 @@
         .html5-qrcode-element {
             width: 130px;
             height: 40px;
-            color: #f0094a;
+            color: #0D9276;
             border-radius: 5px;
-            border-color: #f0094a;
+            border-color: #0D9276;
             /* padding: 10px 25px; */
             font-family: 'Lato', sans-serif;
             font-weight: 500;
@@ -37,7 +37,7 @@
             transition: all 0.3s ease;
             position: relative;
             display: inline-block;
-            box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+            box-shadow: inset 2px 2px 2px 0px rgba(13, 146, 118, .5),
                 7px 7px 20px 0px rgba(0, 0, 0, .1),
                 4px 4px 5px 0px rgba(0, 0, 0, .1);
             outline: none;
@@ -57,7 +57,7 @@
             right: 0;
             height: 2px;
             width: 0;
-            background: #f0094a;
+            background: #0D9276;
             box-shadow:
                 -1px -1px 5px 0px #fff,
                 7px 7px 20px 0px #0003,
@@ -79,18 +79,21 @@
         }
 
         .layout-qr {
-            border: 2.5px solid #D61355;
+            border: 2.5px solid #0D9276;
         }
     </style>
 </head>
 
-<body>
+<body style="background-color: #272829">
     @include('backend.portal.scanqr.modalCheckQr')
     @include('backend.portal.scanqr.modalCheckQrIT')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 text-center" style="vertical-align: middle">
                 <div class="card">
+                    <div class="card-header bg-success">
+                        <div class="card-title text-white">Scan QR Code</div>
+                    </div>
                     <div class="layout-qr">
                         <div id="reader"></div>
                     </div>
