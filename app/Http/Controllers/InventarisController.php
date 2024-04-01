@@ -49,7 +49,8 @@ class InventarisController extends Controller
                                     foreach ($inventarisK3Details as $key => $inventarisK3Detail) {
                                         if($inventarisK3Detail->jenis_barang == 'APAR'){
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                                $tahun_aktif = Carbon::now()->subYear()->format('Y');
+                                                // $tahun_aktif = Carbon::now()->subYear()->format('Y');
+                                                $tahun_aktif = Carbon::now()->format('Y');
                                                 $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();
@@ -62,6 +63,7 @@ class InventarisController extends Controller
 
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                                // dd($tgl_sekarang);
                                                 $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
                                                             ->where('bulan',$tgl_sekarang)
                                                             // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
@@ -80,7 +82,8 @@ class InventarisController extends Controller
                                             $statusApart = $formApartDetail;
                                         }elseif($inventarisK3Detail->jenis_barang == 'HYDRANT'){
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                                $tahun_aktif = Carbon::now()->subYear()->format('Y');
+                                                // $tahun_aktif = Carbon::now()->subYear()->format('Y');
+                                                $tahun_aktif = Carbon::now()->format('Y');
                                                 $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();
@@ -112,7 +115,7 @@ class InventarisController extends Controller
                                     }
 
                                     if(empty($statusApart)){
-                                        $statusApartNotif = null;
+                                        $statusApartNotif = '123';
                                     }
                                     else{
                                         $explode_bulan = explode('|', $statusApart->bulan);
