@@ -75,7 +75,7 @@
         </div>
     </nav>
     <div class="utf_main_banner_area" style="background-image:url({{ asset('public/portal/assets/images/T.JPG') }});"
-        data-overlay="8">
+        data-overlay="0">
         <div class="container">
             <div class="col-md-12 col-sm-12">
                 <div class="caption cl-white home_two_slid">
