@@ -131,6 +131,10 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::get('{id}/status_apar/update', [App\Http\Controllers\InventarisController::class, 'detail_k3_status_apar'])->name('inventaris.k3.detail.statusApar.update');   
                 Route::get('{id}/status_hydrant/update', [App\Http\Controllers\InventarisController::class, 'detail_k3_status_hydrant'])->name('inventaris.k3.detail.statusHydrant.update');   
                 Route::get('{id}/download', [App\Http\Controllers\InventarisController::class, 'download_file'])->name('inventaris.k3.detail.download');
+                
+                Route::get('{id}/check_expired', [App\Http\Controllers\InventarisController::class, 'check_expired'])->name('inventaris.k3.check_expired');
+                Route::get('{id}/check_expired/create', [App\Http\Controllers\InventarisController::class, 'check_expired_create'])->name('inventaris.k3.check_expired_create');
+                Route::post('{id}/check_expired/simpan', [App\Http\Controllers\InventarisController::class, 'check_expired_simpan'])->name('inventaris.k3.check_expired_simpan');
             });
         });
     });

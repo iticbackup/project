@@ -28,11 +28,37 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 class InventarisController extends Controller
 {
+    function __construct(
+        InventarisK3 $inventarisK3,
+        InventarisK3Detail $inventarisK3Detail,
+        FormApart $formApart,
+        FormApartDetail $formApartDetail,
+        FormHydrant $formHydrant,
+        FormHydrantDetail $formHydrantDetail,
+        Departemen $departemen,
+        DepartemenDetail $departemenDetail,
+        UserManagement $userManagement,
+        Roles $roles,
+        User $user
+    ){
+        $this->inventaris_k3 = $inventarisK3;
+        $this->inventaris_k3_detail = $inventarisK3Detail;
+        $this->form_apart = $formApart;
+        $this->form_apart_detail = $formApartDetail;
+        $this->form_hydrant = $formHydrant;
+        $this->form_hydrant_detail = $formHydrantDetail;
+        $this->departemen = $departemen;
+        $this->departemen_detail = $departemenDetail;
+        $this->user_management = $userManagement;
+        $this->roles = $roles;
+        $this->user = $user;
+    }
+
     public function index_k3(Request $request)
     {
         
         if($request->ajax()){
-            $data = InventarisK3::all();
+            $data = $this->inventaris_k3->all();
             return DataTables::of($data)
                                 ->addIndexColumn()
                                 ->addColumn('barcode', function($row){
@@ -45,18 +71,18 @@ class InventarisController extends Controller
                                 //     // return $row->departemen->nama_departemen;
                                 // })
                                 ->addColumn('kode_barcode', function($row){
-                                    $inventarisK3Details = InventarisK3Detail::where('inventaris_k3_id',$row->id)->get();
+                                    $inventarisK3Details = $this->inventaris_k3_detail->where('inventaris_k3_id',$row->id)->get();
                                     foreach ($inventarisK3Details as $key => $inventarisK3Detail) {
                                         if($inventarisK3Detail->jenis_barang == 'APAR'){
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 // $tahun_aktif = Carbon::now()->subYear()->format('Y');
                                                 $tahun_aktif = Carbon::now()->format('Y');
-                                                $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                $formApart = $this->form_apart->where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();
                                             }else{
                                                 $tahun_aktif = Carbon::now()->format('Y');
-                                                $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                $formApart = $this->form_apart->where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();
                                             }
@@ -64,7 +90,7 @@ class InventarisController extends Controller
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
                                                 // dd($tgl_sekarang);
-                                                $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
+                                                $formApartDetail = $this->form_apart_detail->where('form_apart_id',$formApart->id)
                                                             ->where('bulan',$tgl_sekarang)
                                                             // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
                                                             // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
@@ -73,7 +99,7 @@ class InventarisController extends Controller
                                                             ->first();
                                             }else{
                                                 $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
-                                                $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
+                                                $formApartDetail = $this->form_apart_detail->where('form_apart_id',$formApart->id)
                                                                 ->where('bulan',$tgl_sekarang)
                                                                 // ->whereMonth('tanggal',Carbon::now()->format('m'))
                                                                 // ->whereYear('tanggal',Carbon::now()->format('Y'))
@@ -84,19 +110,19 @@ class InventarisController extends Controller
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 // $tahun_aktif = Carbon::now()->subYear()->format('Y');
                                                 $tahun_aktif = Carbon::now()->format('Y');
-                                                $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                $formHydrant = $this->form_hydrant->where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();
                                             }else{
                                                 $tahun_aktif = Carbon::now()->format('Y');
-                                                $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                                $formHydrant = $this->form_hydrant->where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();
                                             }
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
                                                 // dd($tgl_sekarang);
-                                                $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
+                                                $formHydrantDetail = $this->form_hydrant_detail->where('form_hydrant_id',$formHydrant->id)
                                                                     ->where('bulan',$tgl_sekarang)
                                                                     // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
                                                                     // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
@@ -106,7 +132,7 @@ class InventarisController extends Controller
                                                 // dd($formHydrantDetail);
                                             }else{
                                                 $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
-                                                $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
+                                                $formHydrantDetail = $this->form_hydrant_detail->where('form_hydrant_id',$formHydrant->id)
                                                                         ->where('bulan',$tgl_sekarang)
                                                                         ->first();
                                             }
@@ -157,189 +183,7 @@ class InventarisController extends Controller
                                     }
 
                                     return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
-                                    // foreach ($inventarisK3Details as $key => $inventarisK3Detail) {
-                                    //     if($inventarisK3Detail->jenis_barang == 'APAR'){
-                                    //         $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
-                                    //         if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                    //             $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-                                    //             $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
-                                    //                                     ->where('bulan',$tgl_sekarang)
-                                    //                                     // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
-                                    //                                     // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
-                                    //                                     // ->whereMonth('tanggal','<=',Carbon::now()->format('m'))
-                                    //                                     // ->whereYear('tanggal',Carbon::now()->format('Y'))
-                                    //                                     ->first();
-                                    //         }else{
-                                    //             $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
-                                    //             $formApartDetail = FormApartDetail::where('form_apart_id',$formApart->id)
-                                    //                                     ->where('bulan',$tgl_sekarang)
-                                    //                                     // ->whereMonth('tanggal',Carbon::now()->format('m'))
-                                    //                                     // ->whereYear('tanggal',Carbon::now()->format('Y'))
-                                    //                                     ->first();
-                                    //         }
-                                    //         $statusApart = $formApartDetail;
-                                    //     }elseif($inventarisK3Detail->jenis_barang == 'HYDRANT'){
-                                    //         $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
-                                    //         if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                    //             $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-                                    //             // dd($tgl_sekarang);
-                                    //             $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
-                                    //                                 ->where('bulan',$tgl_sekarang)
-                                    //                                 // ->whereMonth('tanggal',Carbon::now()->subMonth()->format('m'))
-                                    //                                 // ->whereYear('tanggal',Carbon::now()->subMonth()->format('Y'))
-                                    //                                 // ->whereMonth('tanggal','<=',Carbon::now()->subMonth()->format('m'))
-                                    //                                 // ->whereYear('tanggal',Carbon::now()->format('Y'))
-                                    //                                 ->first();
-                                    //             // dd($formHydrantDetail);
-                                    //         }else{
-                                    //             $tgl_sekarang = Carbon::now()->isoFormat('MM|MMMM|YYYY');
-                                    //             $formHydrantDetail = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
-                                    //                                     ->where('bulan',$tgl_sekarang)
-                                    //                                     // ->whereMonth('tanggal',Carbon::now()->format('m'))
-                                    //                                     // ->whereYear('tanggal',Carbon::now()->format('Y'))
-                                    //                                     ->first();
-                                    //         }
-                                    //                                 // dd('HYDRANT = '.$formHydrantDetail->status);
-                                    //         // if(empty($formHydrantDetail)){
-                                    //         //     $statusHydrant = '-';
-                                    //         // }else{
-                                    //         //     $statusHydrant = $formHydrantDetail->status;
-                                    //         // }
-                                    //         $statusHydrant = $formHydrantDetail;
-                                    //                                 // dd($statusHydrant);
-                                    //     }
-                                    // }
                                     
-                                    // if(empty($statusApart)){
-                                    //     $statusApartNotif = null;
-                                    //     // $statusApartNotif = ' - <span class="badge badge-outline-primary">Data APAR Belum Diinput</span>';
-                                    // }
-                                    // else{
-                                    //     $explode_bulan = explode('|', $statusApart->bulan);
-                                    //     $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
-                                    //     if($statusApart->status == '0'){
-                                    //         $statusApartNotif = ' - <span class="badge badge-outline-warning">Waiting for approval APAR '.$bulan.'</span>';
-                                    //     }
-                                    //     elseif($statusApart->status == 'Y'){
-                                    //         $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
-                                    //     }
-                                    //     elseif($statusApart->status == 'T'){
-                                    //         $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
-                                    //     }
-                                    //     elseif($statusApart->status == null){
-                                    //         $statusApartNotif = ' - <span class="badge badge-outline-primary">APAR Belum Diinput ' .$bulan.'</span>';
-                                    //     }
-
-                                    //     // if ($tgl_old == $backDate) {
-                                    //     //     if($statusApart->status == '0'){
-                                    //     //         $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     if($statusApart->status == 'Y'){
-                                    //     //         $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     if($statusApart->status == 'T'){
-                                    //     //         $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     if($statusApart->status == null){
-                                    //     //         $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .$bulan.'</span>';
-                                    //     //     }
-                                    //     // }
-                                    //     // if($statusApart->status == '0'){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.$bulan.'</span>';
-                                    //     // }
-                                    //     // if($statusApart->status == 'Y'){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.$bulan.'</span>';
-                                    //     // }
-                                    //     // if($statusApart->status == 'T'){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.$bulan.'</span>';
-                                    //     // }
-                                    //     // if($statusApart->status == null){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .$bulan.'</span>';
-                                    //     // }
-                                    //     // else{
-                                    //     //     $statusApartNotif = 'no';
-                                    //     // }
-
-                                    //     // if($statusApart->status == '0'){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-warning">Waiting for approval APAR '.Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
-                                    //     // }
-                                    //     // elseif($statusApart->status == 'Y'){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-success">Verified APAR '.Carbon::parse($statusApart->updated_at)->isoFormat('MM MMMM YYYY').'</span>';
-                                    //     // }
-                                    //     // elseif($statusApart->status == 'T'){
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-danger">Verified APAR Denied '.Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
-                                    //     // }
-                                    //     // else{
-                                    //     //     $statusApartNotif = ' - <span class="badge bg-primary">APAR Belum Diinput ' .Carbon::parse($statusApart->tanggal)->isoFormat('MM MMMM YYYY').'</span>';
-                                    //     // }
-                                        
-                                    // }
-
-                                    // if(empty($statusHydrant)){
-                                    //     $statusHydrantNotif = null;
-                                    //     // $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput</span>';
-                                    // }
-                                    // else{
-                                    //     // $explode_bulan = explode('|',$statusHydrant->bulan);
-                                    //     // $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
-                                    //     // $backDate = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-
-                                    //     // $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
-
-                                    //     $explode_bulan = explode('|', $statusHydrant->bulan);
-                                    //     $bulan = $explode_bulan[1] . ' ' .$explode_bulan[2];
-
-                                    //     if($statusHydrant->status == '0'){
-                                    //         $statusHydrantNotif = ' - <span class="badge badge-outline-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
-                                    //     }
-                                    //     elseif($statusHydrant->status == 'Y'){
-                                    //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
-                                    //     }
-                                    //     elseif($statusHydrant->status == 'T'){
-                                    //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
-                                    //     }
-                                    //     elseif($statusHydrant->status == null){
-                                    //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
-                                    //     }
-                                        
-                                    //     // if($tgl_old <= $backDate){
-                                    //     //     if($statusHydrant->status == '0'){
-                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     elseif($statusHydrant->status == 'Y'){
-                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     elseif($statusHydrant->status == 'T'){
-                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     else{
-                                    //     //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
-                                    //     //     }
-                                    //     // }else{
-                                    //     //     if($statusHydrant->status == '0'){
-                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-warning">Waiting for approval HYDRANT '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     elseif($statusHydrant->status == 'Y'){
-                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-success">Verified HYDRANT '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     elseif($statusHydrant->status == 'T'){
-                                    //     //         $statusHydrantNotif = ' - <span class="badge bg-danger">Verified HYDRANT Denied '.$bulan.'</span>';
-                                    //     //     }
-                                    //     //     else{
-                                    //     //         $statusHydrantNotif = ' - <span class="badge badge-outline-primary">HYDRANT Belum Diinput '.$bulan.'</span>';
-                                    //     //     }
-                                    //     // }
-                                    // }
-
-                                    // // if(empty($statusApart)){
-                                    // //     $statusApartNotif = null;
-                                    // //     // $statusApartNotif = ' - <span class="badge badge-outline-primary">Data APAR Belum Diinput</span>';
-                                    // // }
-                                    // // return $row->kode_barcode.' - '.$statusApart.' - '.$statusHydrant;
-                                    // // return $row->kode_barcode.$statusApartNotif;
-                                    // // return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
-                                    // // return $row->kode_barcode;
-                                    // return $row->kode_barcode.$statusApartNotif.$statusHydrantNotif;
                                 })
                                 ->addColumn('departemen_id', function($row){
                                     return $row->departemen->nama_departemen;
@@ -349,17 +193,25 @@ class InventarisController extends Controller
                                     if(empty($datas->expired)){
                                         return '-';
                                     }
-                                    return Carbon::parse($datas->expired)->format('d-m-Y');
-                                    // return $row->detail_inventaris_k3_detail->detail_form_apar->expired;
-                                    // dd($row->detail_inventaris_k3_detail->detail_form_apar);
+                                    $date = Carbon::today()->format('Y-m-d');
+                                    if ($datas->expired >= $date) {
+                                        $start = $date;
+                                        $end = $datas->expired;
+                                        $check = Carbon::create($start)->floatDiffInDays($end);
+                                        $status = '<span class="badge bg-info">'.$check.' Day</span>';
+                                        return Carbon::parse($datas->expired)->format('d-m-Y').'<br>'.$status;
+                                    }else{
+                                        return '<span class="badge bg-danger">Expired</span>';
+                                    }
+                                    // return Carbon::parse($datas->expired)->format('d-m-Y');
                                 })
                                 ->addColumn('action', function($row){
-                                    $inventarisK3Detail = InventarisK3Detail::where('inventaris_k3_id',$row->id)->first();
-                                    $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
-                                    $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
-                                    $UserManagement = UserManagement::where('user_id',auth()->user()->id)->first();
+                                    $inventarisK3Detail = $this->inventaris_k3_detail->where('inventaris_k3_id',$row->id)->first();
+                                    $formApart = $this->form_apart->where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                                    $formHydrant = $this->form_hydrant->where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                                    $UserManagement = $this->user_management->where('user_id',auth()->user()->id)->first();
                                     
-                                    $departemen = DepartemenDetail::where('user_id',auth()->user()->id)->first();
+                                    $departemen = $this->departemen_detail->where('user_id',auth()->user()->id)->first();
                                     // dd($inventarisK3Detail);
                                     $btn = '<div class="btn-group" role="group" aria-label="Basic example">';
                                     if($inventarisK3Detail->jenis_barang == "APAR" || $inventarisK3Detail->jenis_barang == "HYDRANT"){
@@ -387,12 +239,10 @@ class InventarisController extends Controller
                                                 } 
                                             }
                                         }
+
+                                        // $btn = $btn.'<a href="'.route('inventaris.k3.check_expired',['id' => $row->id]).'" class="btn btn-info"><i class="fas fa-file"></i> Check Alat</a>';
                                     }
-                                    // else{
-                                    //     $btn = $btn.'<a href="'.route('inventaris.k3.detail.form',['id' => $row->id]).'" class="btn btn-success btn-icon">';
-                                    //     $btn = $btn.'<i class="fas fa-plus"></i> Input Data';
-                                    //     $btn = $btn.'</a>';
-                                    // }
+
                                     if($UserManagement->u == "Y"){
                                         if($departemen->departemen->nama_departemen == "HRGA" || $departemen->departemen->nama_departemen == "IT"){
                                             $btn = $btn.'<a href="'.route('inventaris.k3.edit',['id' => $row->id]).'" class="btn btn-warning btn-icon">';
@@ -421,14 +271,14 @@ class InventarisController extends Controller
                                     $btn = $btn.'</div>';
                                     return $btn;
                                 })
-                                ->rawColumns(['action','kode_barcode'])
+                                ->rawColumns(['action','kode_barcode','expired'])
                                 ->make(true);
         }
-        $data['departemens'] = Departemen::all();
-        $data['departemen'] = DepartemenDetail::where('user_id',auth()->user()->id)->first();
+        $data['departemens'] = $this->departemen->all();
+        $data['departemen'] = $this->departemen_detail->where('user_id',auth()->user()->id)->first();
 
-        $data['UserManagement'] = UserManagement::where('user_id',auth()->user()->id)->first();
-        $data['roles'] = Roles::find(auth()->user()->roles);
+        $data['UserManagement'] = $this->user_management->where('user_id',auth()->user()->id)->first();
+        $data['roles'] = $this->roles->find(auth()->user()->roles);
         return view('backend.inventaris.k3.index',$data);
     }
     
@@ -1226,7 +1076,7 @@ class InventarisController extends Controller
         // dd($inventarisK3Details);
         foreach($data['inventarisK3Details'] as $inventarisK3Detail){
             if($inventarisK3Detail->jenis_barang == "APAR"){
-                $data['formApars'] = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                $data['formApars'] = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->orderBy('periode','desc')->first();
                 if(empty($data['formApars'])){
                     $data['formApars'] = [
                         'kode_tabung' => '-',
@@ -1239,7 +1089,7 @@ class InventarisController extends Controller
                 $data['formAparDetails'] = FormApartDetail::where('form_apart_id',$data['formApars']['id'])->orderBy('bulan','asc')->get();
 
             }elseif($inventarisK3Detail->jenis_barang == "HYDRANT"){
-                $data['formHydrants'] = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+                $data['formHydrants'] = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->orderBy('periode','desc')->first();
                 if(empty($data['formHydrants'])){
                     $data['formHydrants'] = [
                         'kode_hydrant' => '-',
@@ -1361,5 +1211,100 @@ class InventarisController extends Controller
         $pdf = PDF::loadView('backend.inventaris.k3.print_periode', $data);
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream('Form Checklist APAR HYDRANT Periode '.$data['periode_from'].' To '.$data['periode_to']);
+    }
+
+    public function check_expired($id)
+    {
+        $data['inventaris_k3_detail'] = $this->inventaris_k3_detail->where('inventaris_k3_id',$id)->first();
+        // dd($data);
+        if (empty($data['inventaris_k3_detail'])) {
+            return redirect()->back()->with(['error','Data tidak ditemukan']);
+        }
+        $data['form_aparts'] = $this->form_apart->where('inventaris_k3_detail_id',$data['inventaris_k3_detail']['id'])->orderBy('created_at','desc')->get();
+        // dd($data);
+        return view('backend.inventaris.k3.expired.checkExpired',$data);
+    }
+
+    public function check_expired_create($id)
+    {
+        // dd($id);
+        $data['inventaris_k3_detail'] = $this->inventaris_k3_detail->where('inventaris_k3_id',$id)->first();
+        if (empty($data['inventaris_k3_detail'])) {
+            return redirect()->back()->with(['error','Data tidak ditemukan']);
+        }
+        $data['form_aparts'] = $this->form_apart->where('inventaris_k3_detail_id',$data['inventaris_k3_detail']['id'])->orderBy('created_at','desc')->first();
+
+        return view('backend.inventaris.k3.expired.create',$data);
+    }
+
+    public function check_expired_simpan(Request $request,$id)
+    {
+        $rules = [
+            'kode_tabung' => 'required',
+            'tempat' => 'required',
+            'jenis' => 'required',
+            'warna' => 'required',
+            'berat' => 'required',
+            'expired' => 'required',
+            'periode' => 'required',
+            'status' => 'required',
+        ];
+        $messages = [
+            'kode_tabung.required'  => 'Kode wajib diisi.',
+            'tempat.required'  => 'Lokasi wajib diisi.',
+            'jenis.unique'  => 'Jenis wajib diisi.',
+            'warna.required'   => 'Warna wajib diisi.',
+            'berat.required'   => 'Berat wajib diisi.',
+            'expired.required'   => 'Expired wajib diisi.',
+            'periode.required'   => 'Periode wajib diisi.',
+            'status.required'   => 'Status wajib diisi.',
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if($validator->passes()){
+            $inventaris_k3_detail = $this->inventaris_k3_detail->select('inventaris_k3_id')->where('inventaris_k3_id',$id)->first();
+            $input['id'] = Str::uuid()->toString();
+            $input['inventaris_k3_detail_id'] = $inventaris_k3_detail->inventaris_k3_id;
+            $input['kode_tabung'] = $request->kode_tabung;
+            $input['jenis'] = $request->jenis;
+            $input['warna'] = $request->warna;
+            $input['berat'] = $request->berat;
+            $input['expired'] = $request->expired;
+            $input['tempat'] = $request->tempat;
+            $input['periode'] = $request->periode;
+            $input['status'] = $request->status;
+
+            $form_apar = $this->form_apart->create($input);
+            if ($form_apar) {
+                $bulan = array("", "Januari","Februari","Maret", "April", "Mei","Juni","Juli","Agustus","September","Oktober", "November","Desember");
+
+                for ($i=1; $i <= 12; $i++) { 
+                    $this->form_apart_detail->create([
+                        'id' => Str::uuid(),
+                        'form_apart_id' => $input['id'],
+                        'bulan' => sprintf("%02s",$i).'|'.$bulan[$i].'|'.Carbon::now()->format('Y')
+                    ]);
+                }
+
+                $message_title="Berhasil !";
+                $message_content="Kode APAR ".$input['kode_tabung']." lokasi ".$input['tempat']." dengan expired ".$input['expired']." Berhasil Dibuat";
+                $message_type="success";
+                $message_succes = true;
+            }
+
+            $array_message = array(
+                'success' => $message_succes,
+                'message_title' => $message_title,
+                'message_content' => $message_content,
+                'message_type' => $message_type,
+            );
+            return response()->json($array_message);
+        }
+
+        return response()->json(
+            [
+                'success' => false,
+                'error' => $validator->errors()->all()
+            ]
+        );
     }
 }

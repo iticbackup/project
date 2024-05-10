@@ -185,6 +185,9 @@
                     orderable: false,
                     searchable: true
                 },
+            ],
+            columnDefs: [
+                { className: 'text-center', targets: [2,3] },
             ]
         });
 
