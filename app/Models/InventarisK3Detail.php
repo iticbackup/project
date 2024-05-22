@@ -26,7 +26,7 @@ class InventarisK3Detail extends Model
     // }
     public function detail_form_apar()
     {
-        return $this->hasOne(\App\Models\FormApart::class, 'inventaris_k3_detail_id');
+        return $this->hasOne(\App\Models\FormApart::class, 'inventaris_k3_detail_id')->where('status','Y');
     }
 
     public function form_apart()

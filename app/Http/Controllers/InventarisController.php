@@ -203,6 +203,8 @@ class InventarisController extends Controller
                                     }else{
                                         return '<span class="badge bg-danger">Expired</span>';
                                     }
+
+                                    // return $row->detail_inventaris_k3_detail->detail_form_apar;
                                     // return Carbon::parse($datas->expired)->format('d-m-Y');
                                 })
                                 ->addColumn('action', function($row){
