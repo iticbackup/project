@@ -141,7 +141,7 @@ class InventarisController extends Controller
                                     }
 
                                     if(empty($statusApart)){
-                                        $statusApartNotif = '123';
+                                        $statusApartNotif = null;
                                     }
                                     else{
                                         $explode_bulan = explode('|', $statusApart->bulan);
