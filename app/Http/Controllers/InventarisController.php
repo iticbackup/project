@@ -1111,7 +1111,7 @@ class InventarisController extends Controller
 
     public function periode()
     {
-        $data['inventarisK3s'] = InventarisK3::get();
+        $data['inventarisK3s'] = InventarisK3::orderBy('kode_barcode','asc')->get();
         return view('backend.inventaris.k3.periode.index',$data);
     }
 
