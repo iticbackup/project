@@ -36,8 +36,12 @@ class ScanQRController extends Controller
             ]);
         }
         foreach ($scanqr1_1 as $key => $inventarisK3Detail) {
-            $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
-            $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)->first();
+            $formApart = FormApart::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                    ->where('status','Y')
+                                    ->first();
+            $formHydrant = FormHydrant::where('inventaris_k3_detail_id',$inventarisK3Detail->id)
+                                        ->where('status','Y')
+                                        ->first();
             if($inventarisK3Detail->jenis_barang == "APAR"){
                 // $scanqr1_1_detail[] = $formApart;
                 $explode_apar = explode("-",Carbon::now()->isoFormat('d-MMMM-Y'));
@@ -47,7 +51,9 @@ class ScanQRController extends Controller
                 $formAparDetails = FormApartDetail::where('form_apart_id',$formApart->id)
                                                     // ->where('bulan','<=','LIKE','%'.$searchApar.'%')
                                                     // ->where('bulan','<=',$searchBulanApar)
-                                                    ->orderBy('bulan','asc')->get();
+                                                    // ->where('bulan','LIKE','%'.Carbon::now()->format('Y').'%')
+                                                    ->orderBy('bulan','asc')
+                                                    ->get();
                 foreach ($formAparDetails as $key => $formAparDetail) {
                     $explode_bulan = explode("|",$formAparDetail->bulan);
                     $scanqr1_1_detail_pengecekan_apar[] = [
@@ -76,7 +82,9 @@ class ScanQRController extends Controller
             }elseif($inventarisK3Detail->jenis_barang == "HYDRANT"){
                 // $scanqr1_1_detail[] = $formHydrant;
                 $formHydrantDetails = FormHydrantDetail::where('form_hydrant_id',$formHydrant->id)
-                                                        ->orderBy('bulan','asc')->get();
+                                                        // ->where('bulan','LIKE','%'.Carbon::now()->format('Y').'%')
+                                                        ->orderBy('bulan','asc')
+                                                        ->get();
                 foreach ($formHydrantDetails as $key => $formHydrantDetail) {
                     $explode_bulan_2 = explode("|",$formHydrantDetail->bulan);
                     $selang = json_decode($formHydrantDetail->selang);
