@@ -208,7 +208,7 @@
                                                             ?>
                                                             <tr>
                                                                 <td class="text-center">
-                                                                    {{ $formAparDetail->id }}
+                                                                    {{-- {{ $formAparDetail->id }} --}}
                                                                     {{ $key + 1 }}
                                                                     @if ($openinventarisk3 == "yes")
                                                                         @if ($backDate == $tgl_old)
