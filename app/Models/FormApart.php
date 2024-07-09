@@ -30,4 +30,10 @@ class FormApart extends Model
     {
         return $this->belongsTo(\App\Models\InventarisK3Detail::class, 'inventaris_k3_detail_id');
     }
+
+    public function detail_form_apart_detail()
+    {
+        return $this->hasOne(\App\Models\FormApartDetail::class, 'form_apart_id');
+        // return $this->belongsTo(\App\Models\FormApartDetail::class, 'id','form_apart_id');
+    }
 }

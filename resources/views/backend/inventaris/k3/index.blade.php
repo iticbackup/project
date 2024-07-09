@@ -101,11 +101,12 @@
                             <thead>
                                 <tr>
                                     {{-- <th style="width: 150px">Barcode</th> --}}
-                                    <th>Kode Barcode</th>
-                                    <th>Lokasi Barcode</th>
-                                    <th>Departemen</th>
-                                    <th>Expired APAR</th>
-                                    <th>Action</th>
+                                    <th class="text-center">Kode Barcode</th>
+                                    <th class="text-center">Lokasi Barcode</th>
+                                    <th class="text-center">Departemen</th>
+                                    <th class="text-center">Expired APAR</th>
+                                    <th class="text-center">Download</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                         </table>
@@ -178,6 +179,10 @@
                 {
                     data: 'expired',
                     name: 'expired'
+                },
+                {
+                    data: 'download',
+                    name: 'download'
                 },
                 {
                     data: 'action',

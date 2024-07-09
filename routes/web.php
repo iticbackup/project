@@ -113,6 +113,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::prefix('inventaris')->group(function(){
             Route::prefix('k3')->group(function(){
                 Route::get('/', [App\Http\Controllers\InventarisController::class, 'index_k3'])->name('inventaris.k3');
+                Route::get('data_check', [App\Http\Controllers\InventarisController::class, 'data_pengecekkan'])->name('inventaris.k3.data_pengecekkan');
                 Route::get('{id}/edit', [App\Http\Controllers\InventarisController::class, 'edit'])->name('inventaris.k3.edit');
                 Route::post('{id}/edit/update', [App\Http\Controllers\InventarisController::class, 'edit_update'])->name('inventaris.k3.edit_update');
                 Route::get('{id}/delete', [App\Http\Controllers\InventarisController::class, 'delete'])->name('inventaris.k3.delete');
@@ -135,6 +136,8 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::get('{id}/check_expired', [App\Http\Controllers\InventarisController::class, 'check_expired'])->name('inventaris.k3.check_expired');
                 Route::get('{id}/check_expired/create', [App\Http\Controllers\InventarisController::class, 'check_expired_create'])->name('inventaris.k3.check_expired_create');
                 Route::post('{id}/check_expired/simpan', [App\Http\Controllers\InventarisController::class, 'check_expired_simpan'])->name('inventaris.k3.check_expired_simpan');
+
+
             });
         });
     });

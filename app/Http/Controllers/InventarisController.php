@@ -188,6 +188,18 @@ class InventarisController extends Controller
                                 ->addColumn('departemen_id', function($row){
                                     return $row->departemen->nama_departemen;
                                 })
+                                ->addColumn('download', function($row){
+                                    $UserManagement = $this->user_management->where('user_id',auth()->user()->id)->first();
+                                    if($UserManagement->r == "Y"){
+                                        $btn = '';
+                                        $btn = $btn.'<a href="'.route('inventaris.k3.detail.download',['id' => $row->id]).'" class="btn btn-primary btn-icon" target="_blank">';
+                                        $btn = $btn.'<i class="fas fa-download"></i> Download Report';
+                                        $btn = $btn.'</a>';
+                                    }else{
+                                        $btn = '-';
+                                    }
+                                    return $btn;
+                                })
                                 ->addColumn('expired', function($row){
                                     $datas = $row->detail_inventaris_k3_detail->detail_form_apar;
                                     if(empty($datas->expired)){
@@ -258,9 +270,6 @@ class InventarisController extends Controller
                                             $btn = $btn.'<i class="fas fa-print"></i> Print Barcode';
                                             $btn = $btn.'</a>';
                                         }
-                                        $btn = $btn.'<a href="'.route('inventaris.k3.detail.download',['id' => $row->id]).'" class="btn btn-primary btn-icon" target="_blank">';
-                                        $btn = $btn.'<i class="fas fa-download"></i> Download Report';
-                                        $btn = $btn.'</a>';
                                     }
                                     if($UserManagement->d == "Y"){
                                         $btn = $btn.'<button onclick="hapus(`'.$row->id.'`)" class="btn btn-danger btn-icon"><i class="fas fa-trash"></i> Delete</button>';
@@ -273,7 +282,7 @@ class InventarisController extends Controller
                                     $btn = $btn.'</div>';
                                     return $btn;
                                 })
-                                ->rawColumns(['action','kode_barcode','expired'])
+                                ->rawColumns(['action','kode_barcode','expired','download'])
                                 ->make(true);
         }
         $data['departemens'] = $this->departemen->all();
@@ -1308,5 +1317,17 @@ class InventarisController extends Controller
                 'error' => $validator->errors()->all()
             ]
         );
+    }
+
+    public function data_pengecekkan()
+    {
+        $data['inventaris_k3_apars'] = $this->inventaris_k3
+                                            ->where('kode_barcode','LIKE','%AH%')
+                                            ->orderBy('kode_barcode','asc')
+                                            ->get();
+        // if (empty($data['inventaris_k3'])) {
+        //     return redirect()->back();
+        // }
+        return view('backend.inventaris.k3.data_check',$data);
     }
 }
