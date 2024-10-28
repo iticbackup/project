@@ -208,7 +208,7 @@
                         txt = txt+'<tr>'+
                                     '<td>'
                                         +value.user_name+
-                                        '<input type="text" name="user_id[]" value='+value.user_id+'>'+
+                                        '<input type="hidden" name="user_id[]" value='+value.user_id+'>'+
                                     '</td>'+
                                     '<td>'+value.departemen_id+'</td>'+
                                     '<td>'+
