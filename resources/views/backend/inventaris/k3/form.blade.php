@@ -198,7 +198,7 @@
                                                         @forelse ($formAparDetails as $key => $formAparDetail)
                                                             <?php
                                                             $explode_bulan = explode('|', $formAparDetail->bulan);
-                                                            $bulan_aktif = $explode_bulan[0] . '|' . $explode_bulan[1];
+                                                            $bulan_aktif = $explode_bulan[0].'|'.$explode_bulan[1];
                                                             $continueDate = \Carbon\Carbon::now()->isoFormat('MM|MMMM');
 
                                                             $explode_tgl = explode('|', $formAparDetail->bulan);
@@ -1104,7 +1104,6 @@
                                                                         @else
                                                                             -
                                                                         @endif
-
                                                                     </td>
                                                                 @endif
                                                             </tr>
@@ -1204,12 +1203,11 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($formHydrantDetails as $key => $formHydrantDetail)
+                                                        @forelse ($formHydrantDetails as $key => $formHydrantDetail)
                                                             <?php
                                                             $explode_bulan = explode('|', $formHydrantDetail->bulan);
-                                                            $bulan_aktif = $explode_bulan[0] . '|' . $explode_bulan[1];
-                                                            $continueDate = \Carbon\Carbon::now()->isoFormat('MM|MMMM');
-
+                                                            $bulan_aktif = $explode_bulan[0].'|'.$explode_bulan[1].'|'.$explode_bulan[2];
+                                                            $continueDate = \Carbon\Carbon::now()->isoFormat('MM|MMMM|YYYY');
                                                             $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
                                                             $backDate = \Carbon\Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
                                                             ?>
@@ -1998,8 +1996,6 @@
                                                                                 <textarea name="hydrant_keterangan" id="" class="form-control hydrantKeterangan" cols="30"
                                                                                     rows="2" required></textarea>
                                                                             @endif
-                                                                            {{-- <input type="text" name="hydrant_checker"
-                                                                class="form-control" placeholder="Checker"> --}}
                                                                         @else
                                                                             @if ($formHydrantDetail->keterangan)
                                                                                 {{ $formHydrantDetail->keterangan }}
@@ -2014,18 +2010,18 @@
                                                                         @if ($backDate == $tgl_old)
                                                                             <td class="text-center">
                                                                                 @if (empty($formHydrantDetail->status))
-                                                                                    @if ($UserManagement->c == 'Y')
-                                                                                        <select name="hydrant_status"
-                                                                                            class="form-control"
-                                                                                            id="hydrant_status">
-                                                                                            <option value="-">
-                                                                                                --Pilih Status --
-                                                                                            </option>
-                                                                                            <option value="Y">
-                                                                                                Approval</option>
-                                                                                            <option value="T">Not
-                                                                                                Approval</option>
-                                                                                        </select>
+                                                                                    @if ($formHydrantDetail->status == '0' || $formHydrantDetail->status == null)
+                                                                                        @if ($UserManagement->c == 'Y')
+                                                                                            <select name="hydrant_status" class="form-control" id="hydrant_status">
+                                                                                                <option value="-">
+                                                                                                    --Pilih Status --
+                                                                                                </option>
+                                                                                                <option value="Y">
+                                                                                                    Approval</option>
+                                                                                                <option value="T">Not
+                                                                                                    Approval</option>
+                                                                                            </select>
+                                                                                        @endif
                                                                                     @endif
                                                                                 @else
                                                                                     @if ($formHydrantDetail->status == 'Y')
@@ -2035,31 +2031,27 @@
                                                                                         |
                                                                                         <span
                                                                                             class="badge badge-outline-primary">
-                                                                                            {{ $formHydrantDetail->approval }}</span>
-                                                                                    @elseif($formHydrantDetail->status == 'T')
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
+                                                                                    @elseif ($formHydrantDetail->status == 'T')
                                                                                         <span
                                                                                             class="badge badge-outline-danger">Verifikasi
-                                                                                            ditolak</span> |
+                                                                                            ditolak</span>
+                                                                                        |
                                                                                         <span
                                                                                             class="badge badge-outline-primary">
-                                                                                            {{ $formHydrantDetail->approval }}</span>
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
+                                                                                    @elseif ($formHydrantDetail->status == '0')
+                                                                                        <span
+                                                                                            class="badge badge-outline-warning">Menunggu Persetujuan</span>
+                                                                                        |
+                                                                                        <span
+                                                                                            class="badge badge-outline-primary">
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
                                                                                     @endif
                                                                                 @endif
-                                                                                {{-- @if ($formHydrantDetail->status == '0' || $formHydrantDetail->status == null)
-                                                                                    @if ($UserManagement->c == 'Y')
-                                                                                        <select name="hydrant_status"
-                                                                                            class="form-control"
-                                                                                            id="hydrant_status">
-                                                                                            <option value="-">
-                                                                                                --Pilih Status --
-                                                                                            </option>
-                                                                                            <option value="Y">
-                                                                                                Approval</option>
-                                                                                            <option value="T">Not
-                                                                                                Approval</option>
-                                                                                        </select>
-                                                                                    @endif
-                                                                                @endif --}}
                                                                             </td>
                                                                         @elseif($tgl_old <= $backDate)
                                                                             @if ($formHydrantDetail->status != null)
@@ -2071,24 +2063,84 @@
                                                                                         |
                                                                                         <span
                                                                                             class="badge badge-outline-primary">
-                                                                                            {{ $formHydrantDetail->approval }}</span>
-                                                                                    @elseif($formHydrantDetail->status == 'T')
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
+                                                                                    @elseif ($formHydrantDetail->status == 'T')
                                                                                         <span
                                                                                             class="badge badge-outline-danger">Verifikasi
-                                                                                            ditolak</span> |
+                                                                                            ditolak</span>
+                                                                                        |
                                                                                         <span
                                                                                             class="badge badge-outline-primary">
-                                                                                            {{ $formHydrantDetail->approval }}</span>
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
+                                                                                    @elseif ($formHydrantDetail->status == '0')
+                                                                                        <span
+                                                                                            class="badge badge-outline-warning">Menunggu Persetujuan</span>
+                                                                                        |
+                                                                                        <span
+                                                                                            class="badge badge-outline-primary">
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
+                                                                                    @else
+                                                                                    -
+                                                                                    @endif
+                                                                                </td>
+                                                                            @endif
+                                                                        @else
+                                                                            @if ($formHydrantDetail->status != null)
+                                                                                <td>
+                                                                                    @if ($formHydrantDetail->status == '0' || $formHydrantDetail->status == null)
+                                                                                        @if ($UserManagement->c == 'Y')
+                                                                                            <select name="hydrant_status" class="form-control" id="hydrant_status">
+                                                                                                <option value="-">
+                                                                                                    --Pilih Status --
+                                                                                                </option>
+                                                                                                <option value="Y">
+                                                                                                    Approval</option>
+                                                                                                <option value="T">Not
+                                                                                                    Approval</option>
+                                                                                            </select>
+                                                                                        @endif
                                                                                     @endif
                                                                                 </td>
                                                                             @else
-                                                                            <td class="text-center">-</td>
+                                                                            <td class="text-center">
+                                                                                @if ($formHydrantDetail->status == 'Y')
+                                                                                    <span
+                                                                                        class="badge badge-outline-success">Verifikasi
+                                                                                        diterima</span>
+                                                                                    |
+                                                                                    <span
+                                                                                        class="badge badge-outline-primary">
+                                                                                        {{ $formHydrantDetail->approval }}
+                                                                                    </span>
+                                                                                @elseif ($formHydrantDetail->status == 'T')
+                                                                                    <span
+                                                                                        class="badge badge-outline-danger">Verifikasi
+                                                                                        ditolak</span>
+                                                                                    |
+                                                                                    <span
+                                                                                        class="badge badge-outline-primary">
+                                                                                        {{ $formHydrantDetail->approval }}
+                                                                                    </span>
+                                                                                @elseif ($formHydrantDetail->status == '0')
+                                                                                    <span
+                                                                                        class="badge badge-outline-warning">Menunggu Persetujuan</span>
+                                                                                    |
+                                                                                    <span
+                                                                                        class="badge badge-outline-primary">
+                                                                                        {{ $formHydrantDetail->approval }}
+                                                                                    </span>
+                                                                                @else
+                                                                                -
+                                                                                @endif
+                                                                            </td>
                                                                             @endif
                                                                         @endif
                                                                     @else
                                                                         @if ($continueDate == $bulan_aktif)
                                                                             @if ($formHydrantDetail->status != null)
-                                                                                {{-- {{ $formHydrantDetail->status }} --}}
                                                                                 <td class="text-center">
                                                                                     @if ($formHydrantDetail->status == 'Y')
                                                                                         <span
@@ -2097,21 +2149,22 @@
                                                                                         |
                                                                                         <span
                                                                                             class="badge badge-outline-primary">
-                                                                                            {{ $formHydrantDetail->approval }}</span>
-                                                                                    @elseif($formHydrantDetail->status == 'T')
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
+                                                                                    @elseif ($formHydrantDetail->status == 'T')
                                                                                         <span
                                                                                             class="badge badge-outline-danger">Verifikasi
-                                                                                            ditolak</span> |
+                                                                                            ditolak</span>
+                                                                                        |
                                                                                         <span
                                                                                             class="badge badge-outline-primary">
-                                                                                            {{ $formHydrantDetail->approval }}</span>
+                                                                                            {{ $formHydrantDetail->approval }}
+                                                                                        </span>
                                                                                     @endif
 
                                                                                     @if ($formHydrantDetail->status == '0' || $formHydrantDetail->status == null)
                                                                                         @if ($UserManagement->c == 'Y')
-                                                                                            <select name="hydrant_status"
-                                                                                                class="form-control"
-                                                                                                id="hydrant_status">
+                                                                                            <select name="hydrant_status" class="form-control" id="hydrant_status">
                                                                                                 <option value="-">
                                                                                                     --Pilih Status --
                                                                                                 </option>
@@ -2125,20 +2178,53 @@
                                                                                 </td>
                                                                             @else
                                                                                 <td>
-                                                                                    @if ($UserManagement->c == 'Y')
-                                                                                        <select name="hydrant_status"
-                                                                                            class="form-control"
-                                                                                            id="hydrant_status">
-                                                                                            <option value="-">--Pilih
-                                                                                                Status --</option>
-                                                                                            <option value="Y">Approval
-                                                                                            </option>
-                                                                                            <option value="T">Not
-                                                                                                Approval</option>
-                                                                                        </select>
+                                                                                    @if ($formHydrantDetail->status == '0' || $formHydrantDetail->status == null)
+                                                                                        @if ($UserManagement->c == 'Y')
+                                                                                            <select name="hydrant_status" class="form-control" id="hydrant_status">
+                                                                                                <option value="-">
+                                                                                                    --Pilih Status --
+                                                                                                </option>
+                                                                                                <option value="Y">
+                                                                                                    Approval</option>
+                                                                                                <option value="T">Not
+                                                                                                    Approval</option>
+                                                                                            </select>
+                                                                                        @endif
                                                                                     @endif
                                                                                 </td>
                                                                             @endif
+                                                                        @else
+                                                                            <td class="text-center">
+                                                                                @if ($formHydrantDetail->status == 'Y')
+                                                                                    <span
+                                                                                        class="badge badge-outline-success">Verifikasi
+                                                                                        diterima</span>
+                                                                                    |
+                                                                                    <span
+                                                                                        class="badge badge-outline-primary">
+                                                                                        {{ $formHydrantDetail->approval }}
+                                                                                    </span>
+                                                                                @elseif ($formHydrantDetail->status == 'T')
+                                                                                    <span
+                                                                                        class="badge badge-outline-danger">Verifikasi
+                                                                                        ditolak</span>
+                                                                                    |
+                                                                                    <span
+                                                                                        class="badge badge-outline-primary">
+                                                                                        {{ $formHydrantDetail->approval }}
+                                                                                    </span>
+                                                                                @elseif ($formHydrantDetail->status == '0')
+                                                                                    <span
+                                                                                        class="badge badge-outline-warning">Menunggu Persetujuan</span>
+                                                                                    |
+                                                                                    <span
+                                                                                        class="badge badge-outline-primary">
+                                                                                        {{ $formHydrantDetail->approval }}
+                                                                                    </span>
+                                                                                @else
+                                                                                -
+                                                                                @endif
+                                                                            </td>
                                                                         @endif
                                                                     @endif
                                                                 @else
@@ -2151,27 +2237,34 @@
                                                                                 |
                                                                                 <span
                                                                                     class="badge badge-outline-primary">
-                                                                                    {{ $formHydrantDetail->approval }}</span>
-                                                                            @elseif($formHydrantDetail->status == 'T')
+                                                                                    {{ $formHydrantDetail->approval }}
+                                                                                </span>
+                                                                            @elseif ($formHydrantDetail->status == 'T')
                                                                                 <span
                                                                                     class="badge badge-outline-danger">Verifikasi
-                                                                                    ditolak</span> |
+                                                                                    ditolak</span>
+                                                                                |
                                                                                 <span
-                                                                                    class="badge badge-outline-primary">{{ $formHydrantDetail->approval }}</span>
-                                                                            @elseif($formHydrantDetail->status == 0)
+                                                                                    class="badge badge-outline-primary">
+                                                                                    {{ $formHydrantDetail->approval }}
+                                                                                </span>
+                                                                            @elseif ($formHydrantDetail->status == '0')
                                                                                 <span
-                                                                                    class="badge badge-outline-warning">Menunggu
-                                                                                    Verifikasi</span>
-                                                                                {{-- <span
-                                                                                    class="badge badge-outline-primary">Telah Diverifikasi <br> {{ $formHydrantDetail->approval }}</span> --}}
+                                                                                    class="badge badge-outline-warning">Menunggu Persetujuan</span>
+                                                                                |
+                                                                                <span
+                                                                                    class="badge badge-outline-primary">
+                                                                                    {{ $formHydrantDetail->approval }}
+                                                                                </span>
                                                                             @endif
                                                                         @else
-                                                                            -
+                                                                        -
                                                                         @endif
                                                                     </td>
                                                                 @endif
                                                             </tr>
-                                                        @endforeach
+                                                        @empty
+                                                        @endforelse
                                                         {{-- @foreach ($form_aparts as $key => $form_apart)
                                                 <tr>
                                                     <td>{{ $form_apart['no'] }}</td>
