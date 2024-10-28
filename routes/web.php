@@ -70,8 +70,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', [App\Http\Controllers\DepartemenController::class, 'index'])->name('departemens');
         Route::post('simpan', [App\Http\Controllers\DepartemenController::class, 'simpan'])->name('departemens.simpan');
         Route::get('{id}', [App\Http\Controllers\DepartemenController::class, 'detail'])->name('departemens.detail');
+        Route::get('{id}/edit', [App\Http\Controllers\DepartemenController::class, 'edit'])->name('departemens.edit');
         Route::get('{id}/team', [App\Http\Controllers\DepartemenController::class, 'team'])->name('departemens.team');
         Route::post('team/simpan', [App\Http\Controllers\DepartemenController::class, 'team_simpan'])->name('departemens.team.simpan');
+        Route::post('team/update', [App\Http\Controllers\DepartemenController::class, 'team_update'])->name('departemens.team.update');
     });
     Route::prefix('surat_office')->group(function () {
         Route::get('/', [App\Http\Controllers\SuratOfficeController::class, 'index'])->name('surat_office');

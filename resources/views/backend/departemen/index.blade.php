@@ -23,6 +23,7 @@
     @include('backend.departemen.modalBuat')
     @include('backend.departemen.modalBuatTeam')
     @include('backend.departemen.modalTeam')
+    @include('backend.departemen.modalTeamEdit')
 
     <div class="row">
         <div class="col-12">
@@ -185,18 +186,57 @@
             var ids = id;
             $.ajax({
                 type:'GET',
-                url: "{{ url('users/') }}"+'/'+id+'/edit',
+                url: "{{ url('departemen/') }}"+'/'+id+'/edit',
                 contentType: "application/json;  charset=utf-8",
                 cache: false,
                 success: (result) => {
                     // alert(result);
-                    $('.modalEdit').modal('show');
+                    document.getElementById('modalTeamTitleEdit').innerHTML = 'Edit Team Departemen - '+result.data.nama_departemen;
+                    var dataTeam = result.team;
+                    var txt = "";
+                    dataTeam.forEach(data);
+
+                    function data(value, index) {
+                        // if (value.user_isactive == "1") {
+                        //     $selected = 'checked';
+                        // }else if(value.user_isactive == "0"){
+                        //     $selected = 'checked';
+                        // }else{
+                        //     $selected = '';
+                        // }
+
+                        txt = txt+'<tr>'+
+                                    '<td>'
+                                        +value.user_name+
+                                        '<input type="text" name="user_id[]" value='+value.user_id+'>'+
+                                    '</td>'+
+                                    '<td>'+value.departemen_id+'</td>'+
+                                    '<td>'+
+                                        '<select name="status[]" class="form-control">'+
+                                            '<option value="">'+'-- Pilih Status --'+'</option>'+
+                                            '<option value="'+value.user_id+'|1">'+'Aktif'+'</option>'+
+                                            '<option value="'+value.user_id+'|0">'+'Non Aktif'+'</option>'+
+                                        '</select>'+
+                                        // '<div class="radio form-check-inline">'+
+                                        //     '<input type="radio" value="1" name="status[]" '+$selected+'>'+
+                                        //     '<label> Aktif </label>'+
+                                        // '</div>'+
+                                        // '<div class="radio form-check-inline">'+
+                                        //     '<input type="radio" value="0" name="status[]" '+$selected+'>'+
+                                        //     '<label> Non Aktif </label>'+
+                                        // '</div>'+
+                                    '</td>'+
+                                  '</tr>';
+                    }
+                    document.getElementById('data_table_edit').innerHTML = txt;
+                    $('.modalTeamEdit').modal('show');
                     // document.getElementById('edit_pengguna').innerHTML = 'Edit - '+result.data.name;
-                    $('#edit_id').val(result.data.id);
-                    $('#edit_username').val(result.data.username);
-                    $('#edit_name').val(result.data.name);
-                    $('#edit_email').val(result.data.email);
-                    $('#edit_roles').val(result.data.roles);
+                    // $('#edit_id').val(result.data.id);
+                    // $('#edit_username').val(result.data.username);
+                    // $('#edit_name').val(result.data.name);
+                    // $('#edit_email').val(result.data.email);
+                    // $('#edit_roles').val(result.data.roles);
+                    console.table(result.data.departemen_detail);
                 },
                 error: function (request, status, error) {
                     iziToast.error({
@@ -340,6 +380,41 @@
                         });
                         this.reset();
                         // $('.modalBuat').hide();
+                        table.ajax.reload();
+                    }else{
+                        iziToast.error({
+                            title: result.success,
+                            message: result.error
+                        });
+                    }
+                },
+                error: function (request, status, error) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: error,
+                    });
+                }
+            });
+        });
+
+        $('#form-team-update').submit(function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            $('#image-input-error').text('');
+            $.ajax({
+                type:'POST',
+                url: "{{ route('departemens.team.update') }}",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: (result) => {
+                    if(result.success != false){
+                        iziToast.success({
+                            title: result.message_title,
+                            message: result.message_content
+                        });
+                        this.reset();
+                        $('.modalTeamEdit').hide();
                         table.ajax.reload();
                     }else{
                         iziToast.error({

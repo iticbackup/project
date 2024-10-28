@@ -19,4 +19,11 @@ class Departemen extends Model
         'nama_departemen',
     ];
 
+    public function departemen_detail()
+    {
+        return $this->hasMany(\App\Models\DepartemenDetail::class, 'departemen_id','id')
+                    ->whereHas('user', function($query){
+                        $query->where('is_active','!=','0');
+                    });
+    }
 }

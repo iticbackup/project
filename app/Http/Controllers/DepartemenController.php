@@ -110,11 +110,41 @@ class DepartemenController extends Controller
         ]);
     }
 
+    public function edit($id)
+    {
+        $departemen = Departemen::find($id);
+        if(empty($departemen)){
+            return response()->json([
+                'success' => false,
+                'message' => 'Team Departemen Tidak Ditemukan'
+            ]);
+        }
+
+        foreach ($departemen->departemen_detail as $key => $departemen_detail) {
+            $data[] = [
+                'id' => $departemen_detail->id,
+                'departemen_id' => $departemen_detail->departemen->nama_departemen,
+                'user_id' =>  $departemen_detail->user->id,
+                'user_name' =>  $departemen_detail->user->name,
+                'user_isactive' => $departemen_detail->user->is_active
+            ];
+        }
+        return response()->json([
+            'success' => true,
+            'data' => $departemen,
+            'team' => $data
+        ]);
+    }
+
     public function team($id)
     {
         $team = Departemen::find($id);
         $teamDetailCek = DepartemenDetail::where('departemen_id',$id)->first();
-        $teamDetail = DepartemenDetail::where('departemen_id',$id)->get();
+        $teamDetail = DepartemenDetail::where('departemen_id',$id)
+                                        ->whereHas('user', function($query){
+                                            $query->where('is_active','!=','0');
+                                        })
+                                        ->get();
         
         // dd($id);
         if(empty($teamDetailCek)){
@@ -124,7 +154,7 @@ class DepartemenController extends Controller
                 $data[] = [
                     'id' => $td->id,
                     'departemen_id' => $td->departemen->nama_departemen,
-                    'user_id' =>  $td->user->name
+                    'user_id' =>  $td->user->name,
                 ];
             }
         }
@@ -170,6 +200,49 @@ class DepartemenController extends Controller
             return response()->json($array_message);
         }
 
+        return response()->json(
+            [
+                'success' => false,
+                'error' => $validator->errors()->all()
+            ]
+        );
+    }
+
+    public function team_update(Request $request)
+    {
+        // dd($request->status);
+
+        $rules = [
+            'status' => 'required',
+        ];
+
+        $messages = [
+            'status.required'  => 'Status Team wajib diisi.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->passes()) {
+            $users = User::whereIn('id',$request->user_id)->get();
+            foreach ($users as $key => $user) {
+                // dd(explode('|',$request->status[$key])[0]);
+                User::find(explode('|',$request->status[$key])[0])->update([
+                    'is_active' => explode('|',$request->status[$key])[1]
+                ]);
+            }
+            $message_title="Berhasil !";
+            $message_content="Team Departemen Berhasil Diupdate";
+            $message_type="success";
+            $message_succes = true;
+
+            $array_message = array(
+                'success' => $message_succes,
+                'message_title' => $message_title,
+                'message_content' => $message_content,
+                'message_type' => $message_type,
+            );
+            return response()->json($array_message);
+        }
         return response()->json(
             [
                 'success' => false,

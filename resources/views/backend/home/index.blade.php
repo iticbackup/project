@@ -156,15 +156,15 @@
                                     </div>
                                     <div class="activity-info-text">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <p class="text-muted mb-0 font-13"><span>{{ $dd->user->name }} : </span>
+                                            <p class="text-muted mb-0 font-13"><span>{{ empty($dd->user) ? '-' : $dd->user->name }} : </span>
                                                 {{ $dd->departemen->nama_departemen }}
                                             </p>
-                                            @if (Cache::has('is_online' . $dd->user->id))
+                                            {{-- @if (Cache::has('is_online' . $dd->user->id))
                                                 <small class="text-success">Online</small>
                                             @else
                                                 <small
                                                     class="text-muted">{{ \Carbon\Carbon::parse($dd->user->last_seen)->diffForHumans() }}</small>
-                                            @endif
+                                            @endif --}}
                                         </div>
                                     </div>
                                 </div>

@@ -63,8 +63,12 @@ class HomeController extends Controller
         // return view('backend.home.index',$data,compact('diskuse','diskuses','total_disk_size','disk_used_size'));
         if(auth()->user()->roles != 3){
             $data['user'] = User::find(auth()->user()->id);
-            $data['departemen'] = DepartemenDetail::where('user_id',auth()->user()->id)->first();
+            $data['departemen'] = DepartemenDetail::where('user_id',auth()->user()->id)
+                                                    ->first();
             $data['departemen_details'] = DepartemenDetail::where('departemen_id',$data['departemen']['departemen']['id'])
+                                        ->whereHas('user', function($query){
+                                            $query->where('is_active','!=','0');
+                                        })
                                         ->where('user_id','!=',auth()->user()->id)
                                         ->get();
             // dd($data['departemen_details']);
@@ -93,7 +97,7 @@ class HomeController extends Controller
             }else{
                 $data['surat_offices'] = SuratOffice::where('pengguna',$data['departemen']['departemen']['nama_departemen'])->paginate(10);
             }
-    
+            // dd($data);
             // $data['user_management'] = UserManagement::find(auth()->user()->roles);
     
             return view('backend.home.index',$data,compact('diskuse','diskuses','total_disk_size','disk_used_size'));
