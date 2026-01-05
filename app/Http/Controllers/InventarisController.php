@@ -76,7 +76,7 @@ class InventarisController extends Controller
                                         if($inventarisK3Detail->jenis_barang == 'APAR'){
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
                                                 // $tahun_aktif = Carbon::now()->subYear()->format('Y');
-                                                $tahun_aktif = Carbon::now()->format('Y');
+                                                $tahun_aktif = Carbon::now()->subYear()->format('Y');
                                                 $formApart = $this->form_apart->where('inventaris_k3_detail_id',$inventarisK3Detail->id)
                                                                         ->where('periode',$tahun_aktif)
                                                                         ->first();

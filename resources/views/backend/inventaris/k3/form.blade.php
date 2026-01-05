@@ -97,13 +97,25 @@
             @csrf
             @foreach ($inventarisDetails as $inventarisDetail)
                 <?php
-                $formApar = \App\Models\FormApart::where('inventaris_k3_detail_id', $inventarisDetail->id)
-                    ->where('status', 'Y')
-                    ->first();
-                // dd($formApar);
-                $formHydrant = \App\Models\FormHydrant::where('inventaris_k3_detail_id', $inventarisDetail->id)
-                    ->where('status', 'Y')
-                    ->first();
+                if ($openinventarisk3 == "yes") {
+                    $formApar = \App\Models\FormApart::where('inventaris_k3_detail_id', $inventarisDetail->id)
+                        // ->where('status', 'Y')
+                        ->where('periode',\Carbon\Carbon::now()->subYear()->format('Y'))
+                        ->first();
+                    // dd($formApar);
+                    $formHydrant = \App\Models\FormHydrant::where('inventaris_k3_detail_id', $inventarisDetail->id)
+                        // ->where('status', 'Y')
+                        ->where('periode',\Carbon\Carbon::now()->subYear()->format('Y'))
+                        ->first();
+                }else{
+                    $formApar = \App\Models\FormApart::where('inventaris_k3_detail_id', $inventarisDetail->id)
+                        ->where('status', 'Y')
+                        ->first();
+                    // dd($formApar);
+                    $formHydrant = \App\Models\FormHydrant::where('inventaris_k3_detail_id', $inventarisDetail->id)
+                        ->where('status', 'Y')
+                        ->first();    
+                }
                 // dd($formApar->created_at->format('Y'));
                 // $date_created_at_apar = $formApar->created_at->format('Y');
                 // $date_created_at_hydrant = $formHydrant->created_at->format('Y');
@@ -204,7 +216,7 @@
                                                             $explode_tgl = explode('|', $formAparDetail->bulan);
                                                             $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
                                                             $backDate = \Carbon\Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
-                                                            // dd($backDate);
+                                                            // dd($tgl_old);
                                                             ?>
                                                             <tr>
                                                                 <td class="text-center">
