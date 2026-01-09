@@ -88,7 +88,8 @@ class InventarisController extends Controller
                                             }
 
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                                $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                                // $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                                $tgl_sekarang = Carbon::now()->subYear()->isoFormat('MM|MMMM|YYYY');
                                                 // dd($tgl_sekarang);
                                                 $formApartDetail = $this->form_apart_detail->where('form_apart_id',$formApart->id)
                                                             ->where('bulan',$tgl_sekarang)
@@ -120,7 +121,7 @@ class InventarisController extends Controller
                                                                         ->first();
                                             }
                                             if (env('OPEN_INVENTARIS_K3') == 'yes') {
-                                                $tgl_sekarang = Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                                $tgl_sekarang = Carbon::now()->subYear()->isoFormat('MM|MMMM|YYYY');
                                                 // dd($tgl_sekarang);
                                                 $formHydrantDetail = $this->form_hydrant_detail->where('form_hydrant_id',$formHydrant->id)
                                                                     ->where('bulan',$tgl_sekarang)

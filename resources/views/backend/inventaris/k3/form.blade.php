@@ -215,7 +215,7 @@
 
                                                             $explode_tgl = explode('|', $formAparDetail->bulan);
                                                             $tgl_old = $explode_bulan[0] . '|' . $explode_bulan[1] . '|' .$explode_bulan[2];
-                                                            $backDate = \Carbon\Carbon::now()->subMonth()->isoFormat('MM|MMMM|YYYY');
+                                                            $backDate = \Carbon\Carbon::now()->subYear()->isoFormat('MM|MMMM|YYYY');
                                                             // dd($tgl_old);
                                                             ?>
                                                             <tr>
